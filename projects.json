@@ -1,0 +1,11 @@
+{
+    "projects": [
+        {
+            "projectName": "project1",
+            "tags": [
+                "tag1",
+                "tag2"
+            ]
+        }
+    ]
+}
