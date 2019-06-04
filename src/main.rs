@@ -40,12 +40,52 @@ fn main() {
     let user_home = env::var("HOME").expect("No environment variable $HOME");
 
     let config: Config = read_config(user_home.clone());
-    let (config, projects): (Config, Vec<Project>) = read_projects(config);
+    let (config, mut projects): (Config, Vec<Project>) = read_projects(config);
     println!("{:#?}", config);
     println!("{:#?}", projects);
     if let Some((command, command_args)) = args.split_first() {
-        handle_command(command, &Vec::from(command_args), &config);
+        handle_command(command, Vec::from(command_args), &config, projects);
     }
+}
+
+fn write_projects(projects:Vec<Project>, config: &Config){
+    let projects_json :String = serde_json::to_string(&Projects{projects}).expect("Couldn't convert projects to json");
+    fs::write(config.project_config_path.clone(),projects_json).expect("Couldn't write to projects file");
+}
+
+fn handle_command(
+    command: &String,
+    command_args: Vec<String>,
+    config: &Config,
+    projects_in: Vec<Project>,
+) {
+    // println!("{}", command);
+    // println!("{:?}", command_args);
+    let mut projects = projects_in;
+    match command.as_ref() {
+        "new" => {
+            let directory_name: String = command_args.first().unwrap().to_owned();
+            create_directory(&directory_name, &config);
+            projects.push(Project {
+                project_name: directory_name,
+                tags: Vec::from(&command_args[1..]),
+            });
+    // println!("{:#?}", projects);
+            write_projects(projects,config);
+        }
+        "tag" => {
+            let project_name: String = command_args.first().unwrap().to_owned();
+            let new_tags: Vec<String> = Vec::from(&command_args[1..]);
+            // search for project and add new tags
+        }
+        _ => println!("Command not found"),
+    }
+}
+
+fn create_directory(directory_name: &String, config: &Config) {
+    // println!("{:?}", directory_name);
+    fs::create_dir_all(String::from(config.base_projects_dir.clone()) + directory_name)
+        .expect("Couldn't create the project directory.");
 }
 
 fn read_projects(config: Config) -> (Config, Vec<Project>) {
@@ -83,23 +123,4 @@ fn read_config(user_home: String) -> Config {
         config.project_config_path = settings_map.get("project_config_path").unwrap().clone();
     }
     return config;
-}
-
-fn handle_command(command: &String, command_args: &Vec<String>, config: &Config) {
-    // println!("{}", command);
-    // println!("{:?}", command_args);
-
-    match command.as_ref() {
-        "new" => {
-            let directory_name: String = command_args.first().unwrap().to_owned();
-            create_directory(&directory_name, &config)
-        }
-        _ => println!("Command not found"),
-    }
-}
-
-fn create_directory(directory_name: &String, config: &Config) {
-    // println!("{:?}", directory_name);
-    fs::create_dir_all(String::from(config.base_projects_dir.clone()) + directory_name)
-        .expect("Couldn't create the project directory.");
 }
