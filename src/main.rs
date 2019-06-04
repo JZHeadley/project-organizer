@@ -28,7 +28,7 @@ impl Default for Config {
     fn default() -> Config {
         Config {
             base_projects_dir: String::from("/home/projects"),
-            project_config_path: String::from("/home/projects/projects.json"),
+            project_config_path: String::from("/home/projects/projects.toml"),
         }
     }
 }
