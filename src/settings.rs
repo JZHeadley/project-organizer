@@ -21,7 +21,7 @@ impl Default for Settings {
 }
 impl Settings{
     pub fn read_config(user_home: String) -> Settings {
-        let config_dir_str: String = String::from(user_home + "/.projects");
+        let config_dir_str: String = String::from(user_home + "/.config/projects/");
         let config_path_str = String::from(config_dir_str.clone() + "/config.toml");
         let config_path: &Path = Path::new(&config_path_str);
         let mut config: Settings = Settings::default();
