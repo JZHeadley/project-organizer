@@ -5,6 +5,6 @@ authors = ["jzheadley <headleyjz@vcu.edu>"]
 edition = "2018"
 
 [dependencies]
-config = "0.9"
+config = "0.9.2"
 serde = { version = "1.0.92", features = ["derive"] }
 serde_json = "1.0.39"
